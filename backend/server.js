@@ -1,67 +1,58 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-
+const dotenv = require("dotenv");
+const dbConnection = require("./config");
+const Task = require("./models/taskModel");
+const tasks = require("./data");
+dotenv.config();
 app.use(express.json());
 app.use(cors());
 
-const tasks = [
-  {
-    name: "Create Login Page",
-    description:
-      "Design and implement a responsive login page using HTML, CSS, and JavaScript with input validation and error handling.",
-  },
-  {
-    name: "Set Up MongoDB Database",
-    description:
-      "Initialize a MongoDB database for the application, define the schema for user and book collections, and establish a connection using Mongoose.",
-  },
-];
+app.listen(3000, async (req, res) => {
+  dbConnection();
 
-app.listen(3000, (req, res) => {
+  // await Task.insertMany(tasks);
   console.log("server is listening..");
 });
 
-app.get("/tasks", (req, res) => {
+app.get("/tasks", async (req, res) => {
   try {
-    res.status(200).json(tasks);
-  } catch (err) {
-    console.log(err.message);
+    const allTasks = await Task.find();
+    res.status(200).json({ success: true, message: allTasks });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error });
   }
 });
 
-app.post("/tasks/create", (req, res) => {
-  let { name, description } = req.body;
-  if (!name || !description) {
-    return res
-      .status(400)
-      .json({ message: "Both name and description are required." });
-  }
+app.post("/tasks/create", async (req, res) => {
   try {
-    tasks.push(req.body);
-    res.status(201).json({ message: "task added", tasks });
+    let { name, description } = req.body;
+    const newTask = new Task(req.body);
+    await newTask.save();
+    res.status(201).json({ message: "task added", newTask });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 });
 
-app.put("/tasks/:id", (req, res) => {
+app.put("/tasks/:id", async (req, res) => {
+  let { id } = req.params;
+  let task = req.body;
   try {
-    let id = parseInt(req.params.id);
-    let { name, description } = req.body;
-    tasks[id] = req.body;
-    res.status(200).json({ task: tasks[id] });
-  } catch (err) {
-    res.status(404).json({ message: "something went wrong" });
+    const updatedBook = await Task.findByIdAndUpdate(id, task, { new: true });
+    res.status(200).json({ success: true, message: updatedBook });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "server Error" });
   }
 });
 
-app.delete("/tasks/:id", (req, res) => {
-  let id = parseInt(req.params.id);
+app.delete("/tasks/:id", async (req, res) => {
+  let { id } = req.params;
   try {
-    let deletedTask = tasks.splice(id, 1);
-    res.status(200).json({ tasks: tasks, deletedTask: deletedTask });
+    let deletedTask = await Task.findByIdAndDelete(id);
+    res.status(200).json({ deletedTask: deletedTask });
   } catch (err) {
-    res.send(err);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 });
