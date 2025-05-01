@@ -1,6 +1,6 @@
 # Task Management Application
 
-A full-stack Task Management application built using **React.js** for the frontend, **Node.js + Express** for the backend, and styled with **Bootstrap**. This app allows users to create, update, delete, and view tasks efficiently.
+A full-stack Task Management application built using **React.js** for the frontend, **Node.js + Express + MongoDB database** for the backend, and styled with **Bootstrap**. This app allows users to create, update, delete, and view tasks efficiently.
 
 ## Installation
 
@@ -8,20 +8,20 @@ A full-stack Task Management application built using **React.js** for the fronte
 
 ---
 
-Backend Setup (Node.js + Express)
-npm init
-Go to the server directory
-cd server
-
 #Install Dependencies
-npm install nodemon express cors
+npm install nodemon express mongoose routes cors
+
+Backend Setup (Node.js + Express + MongoDB)
+MongoDB Atlas - database
+Postman for testing
 
 Start the Backend Server
+cd backend
 nodemon server.js
 
 #Frontend Setup (React.js + Bootstrap)
 cd frontend
-create reat app
+create react app
 npm create vite@latest
 cd task-management
 npm install
