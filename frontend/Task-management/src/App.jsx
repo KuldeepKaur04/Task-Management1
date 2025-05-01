@@ -16,7 +16,8 @@ function App() {
     try {
       const response = await fetch(`http://localhost:3000/tasks`);
       const data = await response.json();
-      setTasks(data);
+      setTasks(data.message);
+      // console.log(tasks);
     } catch (err) {
       console.error("Fetch error:", err);
     }
@@ -33,10 +34,12 @@ function App() {
 
   //edit
   const handleEdit = (id) => {
-    setInp(tasks[id]);
-    setIsEditing(true);
-    setEditId(id);
-    console.log(isEditing);
+    const taskToEdit = tasks.find((task) => task._id === id);
+    if (taskToEdit) {
+      setInp({ name: taskToEdit.name, description: taskToEdit.description });
+      setIsEditing(true);
+      setEditId(id);
+    }
   };
 
   //update
@@ -50,9 +53,7 @@ function App() {
     });
 
     if (response.ok) {
-      const updatedTasks = [...tasks];
-      updatedTasks[editId] = inp;
-      setTasks(updatedTasks);
+      await fetchTasks();
       setInp({ name: "", description: "" });
       setIsEditing(false);
       setEditId(null);
@@ -60,12 +61,12 @@ function App() {
   };
 
   //delete
-  const handleDel = async (id) => {
+  const handleDelete = async (id) => {
     const response = await fetch(`http://localhost:3000/tasks/${id}`, {
       method: "Delete",
     });
     if (response.ok) {
-      setTasks((prev) => prev.filter((__dirname, index) => index !== id));
+      setTasks((prev) => prev.filter((task) => task._id !== id));
     } else {
       console.log("failed to delete task");
     }
@@ -99,27 +100,30 @@ function App() {
         </div>
       ) : (
         <>
-          <CreatePage inp={inp} setInp={setInp} setTasks={setTasks} />
-          <div className="row m-3 my-5 gap-5">
+          <CreatePage
+            inp={inp}
+            setInp={setInp}
+            setTasks={setTasks}
+            fetchTasks={fetchTasks}
+          />
+          <div className="row gap-5 d-flex justify-content-center my-5">
             <hr></hr>
-            <h1 className="text-start ">Tasks</h1>
-            {tasks.map((task, id) => {
+            <h1 className="text-center">Tasks</h1>
+            {tasks.map((task) => {
               return (
-                <div className="card col-sm-3 p-3 text-center" key={id}>
+                <div className="card col-sm-3 p-3 text-center" key={task._id}>
                   <p className="fs-5 fw-bold">{task.name}</p>
                   <p>{task.description}</p>
                   <button
                     className="btn btn-outline-danger m-2"
-                    onClick={() => handleDel(id)}
+                    onClick={() => handleDelete(task._id)}
                   >
                     delete
                   </button>
 
                   <button
                     className="btn btn-outline-primary"
-                    onClick={() => {
-                      handleEdit(id);
-                    }}
+                    onClick={() => handleEdit(task._id)}
                   >
                     edit
                   </button>

@@ -20,7 +20,7 @@ function CreatePage({ inp, setTasks, setInp }) {
 
       if (response.ok) {
         const result = await response.json();
-        setTasks(result.tasks);
+        setTasks((prevTasks) => [...prevTasks, result.newTask]);
         setInp({ name: "", description: "" });
       } else {
         console.error("Failed to create task");
