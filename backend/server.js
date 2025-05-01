@@ -17,39 +17,3 @@ app.listen(3000, async (req, res) => {
 });
 
 app.use("/tasks", taskRoutes);
-
-// app.get("/tasks", async (req, res) => {
-//  res.send("db connected");
-// });
-
-// app.post("/tasks/create", async (req, res) => {
-//   try {
-//     let { name, description } = req.body;
-//     const newTask = new Task(req.body);
-//     await newTask.save();
-//     res.status(201).json({ message: "task added", newTask });
-//   } catch (error) {
-//     res.status(404).json({ message: error.message });
-//   }
-// });
-
-// app.put("/tasks/:id", async (req, res) => {
-//   let { id } = req.params;
-//   let task = req.body;
-//   try {
-//     const updatedTask = await Task.findByIdAndUpdate(id, task, { new: true });
-//     res.status(200).json({ success: true, updatedTask });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: "server Error" });
-//   }
-// });
-
-// app.delete("/tasks/:id", async (req, res) => {
-//   let { id } = req.params;
-//   try {
-//     let deletedTask = await Task.findByIdAndDelete(id);
-//     res.status(200).json({ deletedTask: deletedTask });
-//   } catch (err) {
-//     res.status(500).json({ success: false, message: "Server Error" });
-//   }
-// });
